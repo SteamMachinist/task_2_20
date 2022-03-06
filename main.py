@@ -51,14 +51,12 @@ def is_matrix_ordered(m: list):
     for row_n in range(len(m)):
         if not is_ordered:
             return False
-
         if to_right:
             is_ordered = is_row_ordered(m, row_n, seq_order, to_right, range(len(m[row_n])))
         else:
             is_ordered = is_row_ordered(m, row_n, seq_order, to_right, range(len(m[row_n]) - 1, -1, -1))
-
         to_right = not to_right
-    return True
+    return is_ordered
 
 
 if __name__ == '__main__':
