@@ -27,19 +27,14 @@ def is_element_ordered(m: list, row_n: int, column_n: int, seq_order: int, to_ri
         return True
     if to_right:
         if column_n == len(m[row_n]) - 1:
-            if (m[row_n + 1][column_n] - m[row_n][column_n]) * seq_order < 0:
-                return False
+            return (m[row_n + 1][column_n] - m[row_n][column_n]) * seq_order > 0
         else:
-            if (m[row_n][column_n + 1] - m[row_n][column_n]) * seq_order < 0:
-                return False
+            return (m[row_n][column_n + 1] - m[row_n][column_n]) * seq_order > 0
     else:
         if column_n == 0:
-            if (m[row_n + 1][column_n] - m[row_n][column_n]) * seq_order < 0:
-                return False
+            return (m[row_n + 1][column_n] - m[row_n][column_n]) * seq_order > 0
         else:
-            if (m[row_n][column_n - 1] - m[row_n][column_n]) * seq_order < 0:
-                return False
-    return True
+            return (m[row_n][column_n - 1] - m[row_n][column_n]) * seq_order > 0
 
 
 def is_row_ordered(m: list, row_n: int, seq_order: int, to_right: bool, row_range: range):
@@ -52,19 +47,22 @@ def is_row_ordered(m: list, row_n: int, seq_order: int, to_right: bool, row_rang
 def is_matrix_ordered(m: list):
     seq_order = (m[0][1] - m[0][0]) / abs(m[0][1] - m[0][0])
     to_right = True
+    is_ordered = True
     for row_n in range(len(m)):
+        if not is_ordered:
+            return False
+
         if to_right:
-            if not is_row_ordered(m, row_n, seq_order, to_right, range(len(m[row_n]))):
-                return False
+            is_ordered = is_row_ordered(m, row_n, seq_order, to_right, range(len(m[row_n])))
         else:
-            if not is_row_ordered(m, row_n, seq_order, to_right, range(len(m[row_n]) - 1, -1, -1)):
-                return False
+            is_ordered = is_row_ordered(m, row_n, seq_order, to_right, range(len(m[row_n]) - 1, -1, -1))
+
         to_right = not to_right
     return True
 
 
 if __name__ == '__main__':
-    matrix = read_matrix_from_file("input/input2.txt")
-    write_matrix_to_file("output/output2.txt",
+    matrix = read_matrix_from_file("input/input1.txt")
+    write_matrix_to_file("output/output1.txt",
                          matrix,
                          is_matrix_ordered(matrix))
