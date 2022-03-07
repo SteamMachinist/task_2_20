@@ -22,6 +22,30 @@ def write_matrix_to_file(filepath, m: list, is_ordered: bool):
     file.close()
 
 
+def items_in_task_order(m: list):
+    row_count, col_count = len(m), len(m[0])
+    for i in range(row_count + col_count - 1):
+        c_range = range(col_count) if i % 2 else range(col_count - 1, -1, -1)
+        for c in c_range:
+            r = i - c
+            if 0 <= r < row_count and 0 <= c < col_count:
+                yield m[r][c]
+
+
+def pairs_of_neighbors(iterable: iter):
+    first = True
+    for v in iterable:
+        if first:
+            first = False
+        else:
+            yield prev, v
+        prev = v
+
+
+def check(m: list):
+    return all(p[1] > p[0] for p in pairs_of_neighbors(items_in_task_order(m)))
+
+
 def is_element_ordered(m: list, row_n: int, column_n: int, seq_order: int, to_right: bool):
     if row_n == len(m) - 1 and column_n == len(m[row_n]) - 1:
         return True
