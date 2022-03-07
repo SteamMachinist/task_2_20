@@ -24,12 +24,15 @@ def write_matrix_to_file(filepath, m: list, is_ordered: bool):
 
 def items_in_task_order(m: list):
     row_count, col_count = len(m), len(m[0])
-    for i in range(row_count + col_count - 1):
-        c_range = range(col_count) if i % 2 else range(col_count - 1, -1, -1)
-        for c in c_range:
-            r = i - c
-            if 0 <= r < row_count and 0 <= c < col_count:
-                yield m[r][c]
+    to_right = True
+    for row in range(row_count):
+        if to_right:
+            current_range = range(col_count)
+        else:
+            current_range = range(col_count - 1, -1, -1)
+        to_right = not to_right
+        for column in current_range:
+            yield m[row][column]
 
 
 def pairs_of_neighbors(iterable: iter):
@@ -42,49 +45,12 @@ def pairs_of_neighbors(iterable: iter):
         prev = v
 
 
-def check(m: list):
-    return all(p[1] > p[0] for p in pairs_of_neighbors(items_in_task_order(m)))
-
-
-def is_element_ordered(m: list, row_n: int, column_n: int, seq_order: int, to_right: bool):
-    if row_n == len(m) - 1 and column_n == len(m[row_n]) - 1:
-        return True
-    if to_right:
-        if column_n == len(m[row_n]) - 1:
-            return (m[row_n + 1][column_n] - m[row_n][column_n]) * seq_order > 0
-        else:
-            return (m[row_n][column_n + 1] - m[row_n][column_n]) * seq_order > 0
-    else:
-        if column_n == 0:
-            return (m[row_n + 1][column_n] - m[row_n][column_n]) * seq_order > 0
-        else:
-            return (m[row_n][column_n - 1] - m[row_n][column_n]) * seq_order > 0
-
-
-def is_row_ordered(m: list, row_n: int, seq_order: int, to_right: bool, row_range: range):
-    for column_n in row_range:
-        if not is_element_ordered(m, row_n, column_n, seq_order, to_right):
-            return False
-    return True
-
-
-def is_matrix_ordered(m: list):
-    seq_order = (m[0][1] - m[0][0]) / abs(m[0][1] - m[0][0])
-    to_right = True
-    is_ordered = True
-    for row_n in range(len(m)):
-        if not is_ordered:
-            return False
-        if to_right:
-            is_ordered = is_row_ordered(m, row_n, seq_order, to_right, range(len(m[row_n])))
-        else:
-            is_ordered = is_row_ordered(m, row_n, seq_order, to_right, range(len(m[row_n]) - 1, -1, -1))
-        to_right = not to_right
-    return is_ordered
+def check(m: list, ordering):
+    return all((p[1] - p[0]) * ordering > 0 for p in pairs_of_neighbors(items_in_task_order(m)))
 
 
 if __name__ == '__main__':
-    matrix = read_matrix_from_file("input/input1.txt")
-    write_matrix_to_file("output/output1.txt",
+    matrix = read_matrix_from_file("input/input2.txt")
+    write_matrix_to_file("output/output2.txt",
                          matrix,
-                         is_matrix_ordered(matrix))
+                         check(matrix, (matrix[0][1] - matrix[0][0])))
